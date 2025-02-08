@@ -10,9 +10,7 @@ readme = "README.md"
 requires-python = ">=3.9"
 license = "MIT"
 keywords = []
-authors = [
-  { name = "Gabriel Cuendet", email = "gabriel.cuendet@gmail.com" },
-]
+authors = [{ name = "Gabriel Cuendet", email = "gabriel.cuendet@gmail.com" }]
 classifiers = [
   "Development Status :: 4 - Beta",
   "Programming Language :: Python",
@@ -23,11 +21,7 @@ classifiers = [
   "Programming Language :: Python :: Implementation :: CPython",
   "Programming Language :: Python :: Implementation :: PyPy",
 ]
-dependencies = [
-  "aiohttp",
-  "aiofiles",
-  "requests-toolbelt==1.0.0",
-]
+dependencies = ["aiohttp", "aiofiles", "requests-toolbelt==1.0.0"]
 
 [project.urls]
 Documentation = "https://github.com/gcuendet/infomaniak-ai#readme"
@@ -38,15 +32,10 @@ Source = "https://github.com/gcuendet/infomaniak-ai"
 path = "src/infomaniak_ai/__about__.py"
 
 [tool.hatch.envs.types]
-extra-dependencies = [
-  "mypy>=1.0.0",
-]
+extra-dependencies = ["mypy>=1.0.0"]
 
 [tool.hatch.envs.hatch-test]
-extra-dependencies = [
-  "pytest-asyncio",
-  "pytest-dotenv",
-]
+extra-dependencies = ["pytest-asyncio", "pytest-dotenv"]
 
 [tool.hatch.envs.types.scripts]
 check = "mypy --install-types --non-interactive {args:src/infomaniak_ai tests}"
@@ -55,20 +44,14 @@ check = "mypy --install-types --non-interactive {args:src/infomaniak_ai tests}"
 source_pkgs = ["infomaniak_ai", "tests"]
 branch = true
 parallel = true
-omit = [
-  "src/infomaniak_ai/__about__.py",
-]
+omit = ["src/infomaniak_ai/__about__.py"]
 
 [tool.coverage.paths]
 infomaniak_ai = ["src/infomaniak_ai", "*/infomaniak-ai/src/infomaniak_ai"]
 tests = ["tests", "*/infomaniak-ai/tests"]
 
 [tool.coverage.report]
-exclude_lines = [
-  "no cov",
-  "if __name__ == .__main__.:",
-  "if TYPE_CHECKING:",
-]
+exclude_lines = ["no cov", "if __name__ == .__main__.:", "if TYPE_CHECKING:"]
 
 [tool.pytest.ini_options]
 asyncio_default_fixture_loop_scope = "function"

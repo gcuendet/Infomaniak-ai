@@ -28,11 +28,13 @@ class Session:
     @classmethod
     async def create(cls):
         self = cls()
-        self.client_session = aiohttp.ClientSession(base_url=self.base_url, headers=self.authorization_header)
+        self.client_session = aiohttp.ClientSession(
+            base_url=self.base_url, headers=self.authorization_header
+        )
         return self
 
-    async def post(self, url: str, data: Optional[str] = None, headers = None):
+    async def post(self, url: str, data: Optional[str] = None, headers=None):
         return await self.client_session.post(url=url, data=data, headers=headers)
 
-    async def get(self, url: str, headers = None):
+    async def get(self, url: str, headers=None):
         return await self.client_session.get(url=url, headers=headers)

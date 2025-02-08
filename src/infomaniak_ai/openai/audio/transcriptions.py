@@ -9,16 +9,20 @@ from infomaniak_ai.session import Session
 
 async def transcribe(session: Session, audio):
     mp_encoder = MultipartEncoder(
-            fields={
-                "model": "whisperV2",
-                "response_format": "text",
-                # plain file object, no filename or mime type produces a
-                # Content-Disposition header with just the part name
-                "file": ("audio", audio),
-            }
-        )
+        fields={
+            "model": "whisperV2",
+            "response_format": "text",
+            # plain file object, no filename or mime type produces a
+            # Content-Disposition header with just the part name
+            "file": ("audio", audio),
+        }
+    )
 
-    r = await session.post(url="openai/audio/transcriptions", data=mp_encoder.to_string(), headers={"Content-Type": mp_encoder.content_type})
+    r = await session.post(
+        url="openai/audio/transcriptions",
+        data=mp_encoder.to_string(),
+        headers={"Content-Type": mp_encoder.content_type},
+    )
     async with r:
         if not r.ok:
             raise ConnectionError
