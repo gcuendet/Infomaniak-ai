@@ -24,9 +24,10 @@ async def transcribe(session: Session, audio):
         headers={"Content-Type": mp_encoder.content_type},
     )
     async with r:
-        if not r.ok:
-            raise ConnectionError
         json_body = await r.json()
+        if not r.ok:
+            print(json_body)
+            raise ConnectionError
 
     # Fetch the result
     batch_id = json_body["batch_id"]
@@ -35,9 +36,10 @@ async def transcribe(session: Session, audio):
     while status == "pending":
         r = await session.get(url=f"results/{batch_id}")
         async with r:
-            if not r.ok:
-                raise ConnectionError
             json_body = await r.json()
+            if not r.ok:
+                print(json_body)
+                raise ConnectionError
             status = json_body["status"]
 
     return json_body["data"].strip()
