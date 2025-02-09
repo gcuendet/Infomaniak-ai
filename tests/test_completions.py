@@ -10,3 +10,4 @@ async def test_complete(dotenvvar):
     msg = "Write a letter to your future self."
     text = await complete(session=session, msg=msg)
     assert "Dear Future Self," in text
+    await session.close()

@@ -19,3 +19,4 @@ async def test_session_create(dummyenvvar):
     )
     assert "Authorization" in s.authorization_header
     assert s.authorization_header["Authorization"] == f"Bearer {s.access_token}"
+    s.close()

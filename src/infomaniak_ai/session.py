@@ -33,6 +33,9 @@ class Session:
         )
         return self
 
+    async def close(self):
+        await self.client_session.close()
+
     async def post(self, url: str, data: Optional[str] = None, headers=None):
         return await self.client_session.post(url=url, data=data, headers=headers)
 
