@@ -5,6 +5,7 @@ from __future__ import annotations
 
 from enum import Enum
 from typing import Optional
+import asyncio
 
 from requests_toolbelt.multipart.encoder import MultipartEncoder
 
@@ -12,6 +13,8 @@ from infomaniak_ai.session import Session
 
 
 class ResponseFormat(str, Enum):
+    """Enum containing the different possible values for the response_format"""
+
     JSON = "json"
     SRT = "srt"
     TEXT = "text"
@@ -20,6 +23,8 @@ class ResponseFormat(str, Enum):
 
 
 class Model(str, Enum):
+    """Enum containing the different models available"""
+
     WHISPER = "whisper"
     WHISPER_V2 = "whisperV2"
 
@@ -106,6 +111,7 @@ async def transcribe(
     status = "pending"
 
     while status == "pending":
+        await asyncio.sleep(1)
         r = await session.get(url=f"results/{batch_id}")
         async with r:
             json_body = await r.json()

@@ -1,16 +1,122 @@
 # SPDX-FileCopyrightText: 2025-present Gabriel Cuendet <gabriel.cuendet@gmail.com>
 #
 # SPDX-License-Identifier: MIT
+from __future__ import annotations
+
 import json
+from enum import Enum
+from typing import Optional
 
 from infomaniak_ai.session import Session
 
 
-async def complete(session: Session, msg: str):
+class Model(str, Enum):
+    GRANITE = "granite"
+    LLAMA3 = "llama3"
+    MIXTRAL = "mixtral"
+    MIXTRAL8x22B = "mixtral8x22b"
+
+
+def _validate_inputs(
+    data,
+    max_tokens: Optional[int] = None,
+    frequency_penalty: Optional[float] = None,
+    presence_penalty: Optional[float] = None,
+    temperature: Optional[float] = None,
+    top_p: Optional[float] = None,
+):
+    if max_tokens:
+        if max_tokens < 1 or max_tokens > 5000:
+            raise AttributeError("max_tokens should be between 1 and 5000")
+        data["max_tokens"] = max_tokens
+    if frequency_penalty:
+        if frequency_penalty < -2.0 or frequency_penalty > 2.0:
+            raise AttributeError("frequency_penalty attribute should be -2.0 < f < 2.0")
+        data["frequency_penalty"] = frequency_penalty
+    if presence_penalty:
+        if presence_penalty < -2.0 or presence_penalty > 2.0:
+            raise AttributeError(
+                "presence_penalty attribute shoud be between -2.0 and 2.0"
+            )
+        data["presence_penalty"] = presence_penalty
+    if temperature:
+        if temperature < 0 or temperature > 2:
+            raise AttributeError("temperature attribute should be between 0 and 2")
+        data["temperature"] = temperature
+    if top_p:
+        if top_p < 0.0 or top_p > 1.0:
+            raise AttributeError("top_p attribute should be between 0.0 and 1.0")
+        data["top_p"] = top_p
+    return data
+
+
+class ProfileType(str, Enum):
+    CREATIVE = "creative"
+    STANDARD = "standard"
+    STRICT = "strict"
+
+
+async def complete(
+    session: Session,
+    msg: str,
+    model: Model = Model.MIXTRAL,
+    profile_type: ProfileType = ProfileType.STANDARD,
+    max_tokens: Optional[int] = None,
+    frequency_penalty: Optional[float] = None,
+    presence_penalty: Optional[float] = None,
+    temperature: Optional[float] = None,
+    top_p: Optional[float] = None,
+):
+    """
+    Parameters:
+    -----------
+    session: Session
+
+    msg: str
+        User prompt
+
+    model: Model (default=Model.MIXTRAL)
+        Model name to use
+
+    max_tokens: int (default=1024)
+        Maximum number of generated tokens.
+
+    profile_type: ProfileType (default=ProfileType.STANDARD)
+        Define parameter profiles according to your usage preferences.
+        Creativity encourages greater diversity in text generation.
+        Standard settings offer a well-balanced chatbot output.
+        Strict settings result in highly predictable generation, suitable for
+        tasks like translation or text classification labeling.
+
+    frequency_penalty: float (default=0.0)
+        Number between -2.0 and 2.0. Positive values penalize new tokens based on their existing frequency in the text so far, decreasing the model's likelihood to repeat the same line verbatim.
+
+    presence_penalty: float (default=-1.0)
+        The number should be above -2.0 but below 2.0. A positive value for the number will result in a penalty for any new tokens that are similar to those already present in the text, encouraging the model to discuss different topics. It is recommended to set the value between -1.5 and -0.5. Using higher values along with a larger temperature setting may cause a hallucination loop.
+
+    temperature: float (default=0.5)
+        What sampling temperature to use, between 0 and 2. Higher values like 0.8 will make the output more random, while lower values like 0.2 will make it more focused and deterministic. We generally recommend altering this or top_p but not both.
+
+    top_p: float (default=0.95)
+        An alternative to sampling with temperature, called nucleus sampling, where the model considers the results of the tokens with top_p probability mass. So 0.1 means only the tokens comprising the top 10% probability mass are considered.
+
+    Returns:
+    --------
+    """
     data = {
         "messages": [{"content": msg, "role": "user"}],
-        "model": "mixtral",
+        "model": model,
+        "profile_type": profile_type,
     }
+
+    data = _validate_inputs(
+        data,
+        max_tokens,
+        frequency_penalty,
+        presence_penalty,
+        temperature,
+        top_p,
+    )
 
     r = await session.post(
         url="openai/chat/completions",
@@ -20,8 +126,8 @@ async def complete(session: Session, msg: str):
     async with r:
         json_body = await r.json()
         if not r.ok:
-            print(json_body)
-            raise ConnectionError
+            msg = json_body["error"]["description"] if "error" in json_body else ""
+            raise ConnectionError(msg)
 
     print(json_body)
     return json_body["choices"][0]["message"]["content"]
