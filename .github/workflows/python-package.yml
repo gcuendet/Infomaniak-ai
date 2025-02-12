@@ -1,4 +1,4 @@
-name: Client Python Package
+name: Python Package
 
 on:
   push:
@@ -27,9 +27,9 @@ jobs:
       - name: Install Hatch
         run: pipx install hatch
       - name: Run tests
-        run: hatch run test:test
+        run: python -m hatch test
       - name: Build dist
-        run: hatch build
+        run: python -m hatch build
       - name: Publish on PyPI
         if: github.ref == 'refs/heads/main'
-        run: hatch publish
+        run: python -m hatch publish
