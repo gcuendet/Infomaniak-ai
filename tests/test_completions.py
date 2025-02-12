@@ -45,6 +45,15 @@ def test_raise(dummyenvvar):
 
 
 @pytest.mark.asyncio
+async def test_complete(dummyenvvar, mock_api_call):
+    async with Session() as session:
+        msg = "Write a letter to your future self."
+        text = await complete(session=session, msg=msg)
+        assert "Dear Future Self," in text
+
+
+@pytest.mark.real_api_calls
+@pytest.mark.asyncio
 async def test_complete(dotenvvar):
     async with Session() as session:
         msg = "Write a letter to your future self."
