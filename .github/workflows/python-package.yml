@@ -34,4 +34,5 @@ jobs:
         if: github.ref == 'refs/heads/main'
         run: python -m hatch publish
         env:
+          HATCH_INDEX_USER: __token__
           HATCH_INDEX_AUTH: ${{ secrets.HATCH_INDEX_AUTH }}
