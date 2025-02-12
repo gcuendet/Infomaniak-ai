@@ -33,3 +33,5 @@ jobs:
       - name: Publish on PyPI
         if: github.ref == 'refs/heads/main'
         run: python -m hatch publish
+        env:
+          HATCH_INDEX_AUTH: ${{ secrets.HATCH_INDEX_AUTH }}
